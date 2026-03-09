@@ -1,0 +1,93 @@
+# ============================================
+# WordPress Core — jangan push ke repo
+# ============================================
+wp-admin/
+wp-includes/
+wp-activate.php
+wp-blog-header.php
+wp-comments-post.php
+wp-config.php
+wp-config-sample.php
+wp-cron.php
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+index.php
+license.txt
+readme.html
+
+# ============================================
+# WordPress content — selective
+# ============================================
+wp-content/
+!wp-content/plugins/
+wp-content/plugins/*
+# Uncomment plugin folders you want to track:
+# !wp-content/plugins/target-plugin/
+
+# ============================================
+# Sensitive & environment
+# ============================================
+.env
+*.log
+*.sql
+*.sql.gz
+wp-config.php
+
+# ============================================
+# Python / Virtual environment
+# ============================================
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ============================================
+# Lab artifacts — large/binary/sensitive
+# ============================================
+lab-cve/**/target.txt
+lab-cve/**/targetke2.txt
+lab-cve/**/res.txt
+lab-cve/**/res.csv
+lab-cve/**/*.zip
+lab-cve/**/user-registration/
+lab-cve/**/contact-form-entries/
+lab-cve/**/exploit_output*.txt
+lab-cve/**/_vuln_targets.txt
+lab-cve/**/_diag_results.json
+lab-cve/**/results.txt
+lab-cve/**/results.json
+lab-cve/**/readytoexploit.txt
+lab-cve/**/scan_result.txt
+lab-cve/**/jpg_results*.txt
+lab-cve/**/jpg_test*.txt
+lab-cve/**/test_res.txt
+lab-cve/**/test_targets.txt
+lab-cve/**/*.jpg
+lab-cve/**/*.png
+lab-cve/**/inputlawas/
+lab-cve/**/res/
+lab-cve/**/plugin-src/
+
+# ============================================
+# Backup & misc
+# ============================================
+backup/
+wordpress/
+uploads/
+bbpress-testing/
+pentest-results/
+
+# ============================================
+# OS & editor
+# ============================================
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.swo

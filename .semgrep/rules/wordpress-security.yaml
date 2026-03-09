@@ -1,0 +1,296 @@
+rules:
+  # =====================================================
+  # WordPress-specific Security Rules for White-box Pentest
+  # =====================================================
+
+  # --- SQL Injection ---
+  - id: wp-sqli-direct-query
+    patterns:
+      - pattern: $wpdb->query("..." . $INPUT . "...")
+      - pattern-not: $wpdb->query($wpdb->prepare(...))
+    message: >
+      Direct SQL query without $wpdb->prepare(). SQL injection risk.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+      owasp: "A03:2021 - Injection"
+
+  - id: wp-sqli-get-results
+    patterns:
+      - pattern: $wpdb->get_results("..." . $INPUT . "...")
+      - pattern-not: $wpdb->get_results($wpdb->prepare(...))
+    message: >
+      $wpdb->get_results() without prepare(). SQL injection risk.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+
+  - id: wp-sqli-get-var
+    patterns:
+      - pattern: $wpdb->get_var("..." . $INPUT . "...")
+      - pattern-not: $wpdb->get_var($wpdb->prepare(...))
+    message: >
+      $wpdb->get_var() without prepare(). SQL injection risk.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+
+  - id: wp-sqli-get-row
+    patterns:
+      - pattern: $wpdb->get_row("..." . $INPUT . "...")
+      - pattern-not: $wpdb->get_row($wpdb->prepare(...))
+    message: >
+      $wpdb->get_row() without prepare(). SQL injection risk.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+
+  # --- XSS ---
+  - id: wp-xss-echo-get
+    pattern: echo $_GET[$KEY];
+    message: >
+      Echoing $_GET directly without escaping. XSS vulnerability.
+      Use esc_html(), esc_attr(), or wp_kses() before output.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-79: Cross-site Scripting"
+
+  - id: wp-xss-echo-post
+    pattern: echo $_POST[$KEY];
+    message: >
+      Echoing $_POST directly without escaping. XSS vulnerability.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-79: Cross-site Scripting"
+
+  - id: wp-xss-echo-request
+    pattern: echo $_REQUEST[$KEY];
+    message: >
+      Echoing $_REQUEST directly without escaping. XSS vulnerability.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-79: Cross-site Scripting"
+
+  # --- Missing Nonce Verification ---
+  - id: wp-missing-nonce-admin-post
+    patterns:
+      - pattern: |
+          function $FUNC() {
+              ...
+              $_POST[$KEY]
+              ...
+          }
+      - pattern-not: |
+          function $FUNC() {
+              ...
+              wp_verify_nonce(...)
+              ...
+          }
+      - pattern-not: |
+          function $FUNC() {
+              ...
+              check_admin_referer(...)
+              ...
+          }
+    message: >
+      Function accesses $_POST without nonce verification.
+      Use wp_verify_nonce() or check_admin_referer().
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-352: CSRF"
+
+  # --- Capability Checks ---
+  - id: wp-admin-ajax-no-cap-check
+    patterns:
+      - pattern: |
+          add_action('wp_ajax_$ACTION', '$CALLBACK');
+      - pattern-not-inside: |
+          function $CALLBACK() {
+              ...
+              current_user_can(...)
+              ...
+          }
+    message: >
+      AJAX handler registered without apparent capability check.
+      Ensure the callback verifies current_user_can().
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-862: Missing Authorization"
+
+  - id: wp-nopriv-ajax-sensitive
+    pattern: add_action('wp_ajax_nopriv_$ACTION', '$CALLBACK');
+    message: >
+      Unauthenticated AJAX handler registered. Verify this is intentional
+      and that the callback properly validates/sanitizes all input.
+    languages: [php]
+    severity: INFO
+    metadata:
+      category: security
+      cwe: "CWE-306: Missing Authentication"
+
+  # --- File Operations ---
+  - id: wp-unsafe-file-include
+    patterns:
+      - pattern-either:
+          - pattern: include($_GET[$KEY])
+          - pattern: include($_POST[$KEY])
+          - pattern: include($_REQUEST[$KEY])
+          - pattern: require($_GET[$KEY])
+          - pattern: require($_POST[$KEY])
+          - pattern: require($_REQUEST[$KEY])
+          - pattern: include_once($_GET[$KEY])
+          - pattern: require_once($_GET[$KEY])
+    message: >
+      File inclusion with user-controlled input. LFI/RFI vulnerability.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-98: PHP File Inclusion"
+
+  - id: wp-unsafe-file-upload
+    patterns:
+      - pattern: move_uploaded_file($SRC, $DEST)
+      - pattern-not-inside: |
+          ...
+          wp_check_filetype(...)
+          ...
+    message: >
+      File upload without wp_check_filetype() validation.
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-434: Unrestricted Upload"
+
+  # --- Command Injection ---
+  - id: wp-command-injection
+    patterns:
+      - pattern-either:
+          - pattern: exec($INPUT)
+          - pattern: system($INPUT)
+          - pattern: passthru($INPUT)
+          - pattern: shell_exec($INPUT)
+          - pattern: popen($INPUT, ...)
+          - pattern: proc_open($INPUT, ...)
+    message: >
+      Command execution detected. If $INPUT contains user data, this is
+      command injection. Use escapeshellarg()/escapeshellcmd().
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-78: OS Command Injection"
+
+  # --- Deserialization ---
+  - id: wp-unsafe-unserialize
+    patterns:
+      - pattern-either:
+          - pattern: unserialize($_GET[$KEY])
+          - pattern: unserialize($_POST[$KEY])
+          - pattern: unserialize($_REQUEST[$KEY])
+          - pattern: unserialize($_COOKIE[$KEY])
+    message: >
+      Deserializing user input. PHP Object Injection vulnerability.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+
+  - id: wp-unserialize-general
+    pattern: unserialize($DATA)
+    message: >
+      unserialize() usage detected. Prefer json_decode() or
+      maybe_unserialize() with proper input validation.
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+
+  # --- Authentication ---
+  - id: wp-hardcoded-credentials
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $PASSWORD = "...";
+          - pattern: |
+              define('DB_PASSWORD', "...");
+    message: >
+      Hardcoded credentials detected. Use environment variables or wp-config.php.
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-798: Hard-coded Credentials"
+
+  # --- SSRF ---
+  - id: wp-ssrf-remote-get
+    patterns:
+      - pattern-either:
+          - pattern: wp_remote_get($_GET[$KEY])
+          - pattern: wp_remote_get($_POST[$KEY])
+          - pattern: wp_remote_post($_GET[$KEY])
+          - pattern: wp_remote_post($_POST[$KEY])
+          - pattern: file_get_contents($_GET[$KEY])
+          - pattern: file_get_contents($_POST[$KEY])
+    message: >
+      HTTP request with user-controlled URL. SSRF vulnerability.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery"
+
+  # --- Insecure Options ---
+  - id: wp-update-option-unvalidated
+    patterns:
+      - pattern: update_option($KEY, $_POST[$VAL])
+    message: >
+      Updating WordPress option with unvalidated POST data.
+      Sanitize with sanitize_text_field() or appropriate sanitizer.
+    languages: [php]
+    severity: WARNING
+    metadata:
+      category: security
+      cwe: "CWE-20: Improper Input Validation"
+
+  # --- Debug/Info Leak ---
+  - id: wp-debug-enabled
+    pattern: define('WP_DEBUG', true);
+    message: >
+      WP_DEBUG is enabled. Disable in production to prevent info leakage.
+    languages: [php]
+    severity: INFO
+    metadata:
+      category: security
+      cwe: "CWE-200: Information Exposure"
+
+  - id: wp-phpinfo
+    pattern: phpinfo();
+    message: >
+      phpinfo() call detected. Remove in production — exposes server configuration.
+    languages: [php]
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-200: Information Exposure"

@@ -1,0 +1,25 @@
+{
+  "analysis_type": "wordpress_privilege_escalation",
+  "targets": [
+    "add_action('wp_ajax_",
+    "add_action('wp_ajax_nopriv_",
+    "register_rest_route"
+  ],
+  "security_checks": [
+    "current_user_can",
+    "check_ajax_referer",
+    "wp_verify_nonce"
+  ],
+  "tasks": [
+    "find_ajax_handlers",
+    "verify_capability_checks",
+    "verify_nonce_validation",
+    "detect_unauthorized_actions"
+  ],
+  "output": {
+    "endpoint": "",
+    "file": "",
+    "missing_check": "",
+    "impact": ""
+  }
+}

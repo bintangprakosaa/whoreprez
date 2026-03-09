@@ -1,0 +1,27 @@
+{
+  "vulnerability_type": "Remote Code Execution",
+  "severity": "Critical",
+  "file_path": "includes/ajax-handler.php",
+  "line_number": 142,
+  "function_name": "load_template",
+  "source": "$_POST['template']",
+  "sink": "include()",
+  "data_flow": "$_POST['template'] -> $template -> include($template)",
+  "exploit_chain": "LFI -> file inclusion -> RCE",
+  "recommended_manual_test": "Send POST request with template=../../../../etc/passwd"
+}
+
+
+{
+  "_comment": "if found gadget chain",
+  "vulnerability_type": "PHP Object Injection",
+  "entry_point": "unserialize($_POST['data'])",
+  "file_path": "includes/cache.php",
+  "class_name": "TemplateLoader",
+  "magic_method": "__destruct",
+  "property_flow": "$this->template -> include($this->template)",
+  "dangerous_sink": "include()",
+  "possible_pop_chain": "unserialize -> TemplateLoader::__destruct -> include()",
+  "severity": "Critical",
+  "manual_verification_steps": "send serialized object controlling template property"
+}

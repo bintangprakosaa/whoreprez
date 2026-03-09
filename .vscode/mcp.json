@@ -1,0 +1,15 @@
+{
+    "servers": {
+        "semgrep-scan": {
+            "type": "stdio",
+            "command": "C:\\laragon\\www\\.venv\\Scripts\\python.exe",
+            "args": [
+                "C:\\laragon\\www\\mcp-semgrep-server.py"
+            ],
+            "env": {
+                "PYTHONIOENCODING": "utf-8",
+                "PYTHONUTF8": "1"
+            }
+        }
+    }
+}

@@ -1,0 +1,88 @@
+{
+  "mode": "auto_vulnerability_discovery",
+  "role": "ai_security_auditor",
+  "target": {
+    "application_type": "wordpress_plugin",
+    "language": "php"
+  },
+  "objective": "automatically analyze the codebase and identify potential security vulnerabilities with focus on critical impact",
+  "priority_vulnerabilities": [
+    "remote_code_execution",
+    "php_object_injection",
+    "command_injection",
+    "arbitrary_file_upload",
+    "privilege_escalation",
+    "local_file_inclusion",
+    "path_traversal",
+    "ssrf"
+  ],
+  "sources": [
+    "$_GET",
+    "$_POST",
+    "$_REQUEST",
+    "$_COOKIE",
+    "$_FILES",
+    "REST_API_parameters",
+    "AJAX_request_parameters"
+  ],
+  "dangerous_sinks": [
+    "eval",
+    "assert",
+    "system",
+    "exec",
+    "passthru",
+    "shell_exec",
+    "popen",
+    "proc_open",
+    "include",
+    "require",
+    "require_once",
+    "unserialize",
+    "maybe_unserialize",
+    "move_uploaded_file",
+    "file_get_contents",
+    "fopen"
+  ],
+  "wordpress_entry_points": [
+    "add_action('wp_ajax_",
+    "add_action('wp_ajax_nopriv_",
+    "register_rest_route",
+    "admin_post",
+    "admin_init"
+  ],
+  "security_checks": [
+    "current_user_can",
+    "check_ajax_referer",
+    "wp_verify_nonce",
+    "sanitize_text_field",
+    "esc_html",
+    "esc_attr"
+  ],
+  "analysis_tasks": [
+    "scan_entire_codebase",
+    "locate_user_controlled_inputs",
+    "identify_dangerous_function_usage",
+    "trace_dataflow_from_source_to_sink",
+    "detect_missing_security_checks",
+    "identify_possible_exploit_chains",
+    "prioritize_high_impact_vulnerabilities"
+  ],
+  "exploit_chain_patterns": [
+    "file_upload -> include -> rce",
+    "unserialize -> magic_method -> command_execution",
+    "lfi -> log_poisoning -> rce",
+    "privilege_escalation -> admin_action -> rce"
+  ],
+  "output_format": {
+    "vulnerability_type": "",
+    "severity": "",
+    "file_path": "",
+    "line_number": "",
+    "function_name": "",
+    "source": "",
+    "sink": "",
+    "data_flow": "",
+    "exploit_chain": "",
+    "recommended_manual_test": ""
+  }
+}

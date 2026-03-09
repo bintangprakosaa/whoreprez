@@ -1,0 +1,27 @@
+{
+  "analysis_type": "php_object_injection",
+  "targets": [
+    "unserialize",
+    "maybe_unserialize"
+  ],
+  "magic_methods": [
+    "__destruct",
+    "__wakeup",
+    "__toString",
+    "__call",
+    "__invoke"
+  ],
+  "tasks": [
+    "find_unserialize_usage",
+    "check_if_input_is_user_controlled",
+    "identify_classes_with_magic_methods",
+    "detect_gadget_chain_possibility"
+  ],
+  "output": {
+    "file": "",
+    "class": "",
+    "magic_method": "",
+    "sink_function": "",
+    "possible_exploit_chain": ""
+  }
+}

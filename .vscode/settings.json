@@ -1,0 +1,42 @@
+{
+    // === Semgrep Configuration ===
+    "semgrep.scan.configuration": [
+        "p/php",
+        "p/owasp-top-ten",
+        "p/security-audit",
+        "${workspaceFolder}/.semgrep/rules"
+    ],
+    "semgrep.scan.exclude": [
+        "node_modules",
+        "vendor",
+        ".venv",
+        "*.min.js",
+        "*.min.css",
+        "pentest-results"
+    ],
+    "semgrep.trace.server": "verbose",
+
+    // === CodeQL Configuration ===
+    "codeQL.cli.executablePath": "C:\\codeql\\codeql.exe",
+
+    // === File Explorer ===
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/pentest-results/codeql_db_*": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/vendor": true,
+        "**/.venv": true,
+        "**/pentest-results": true
+    },
+
+    // === Terminal Environment ===
+    "terminal.integrated.env.windows": {
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUTF8": "1",
+        "CODEQL_ALLOW_INSTALLATION_ANYWHERE": "true",
+        "PATH": "C:\\codeql;${env:PATH}"
+    }
+}

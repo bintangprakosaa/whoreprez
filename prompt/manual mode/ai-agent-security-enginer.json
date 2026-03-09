@@ -1,0 +1,69 @@
+{
+  "role": "security_code_auditor",
+  "objective": "analyze the provided wordpress plugin source code and identify critical security vulnerabilities",
+  "focus_vulnerabilities": [
+    "remote_code_execution",
+    "php_object_injection",
+    "command_injection",
+    "privilege_escalation",
+    "arbitrary_file_upload",
+    "path_traversal",
+    "lfi",
+    "ssrf"
+  ],
+  "sources": [
+    "$_GET",
+    "$_POST",
+    "$_REQUEST",
+    "$_COOKIE",
+    "$_FILES",
+    "REST_API_parameters",
+    "AJAX_request_parameters"
+  ],
+  "dangerous_sinks": [
+    "eval",
+    "assert",
+    "system",
+    "exec",
+    "passthru",
+    "shell_exec",
+    "popen",
+    "proc_open",
+    "include",
+    "require",
+    "require_once",
+    "unserialize",
+    "move_uploaded_file"
+  ],
+  "wordpress_specific_targets": [
+    "add_action_wp_ajax",
+    "add_action_wp_ajax_nopriv",
+    "register_rest_route",
+    "admin_post",
+    "admin_init"
+  ],
+  "security_checks": [
+    "nonce_validation",
+    "capability_check",
+    "input_sanitization",
+    "output_escaping"
+  ],
+  "tasks": [
+    "identify_user_input_sources",
+    "identify_dangerous_function_usage",
+    "trace_dataflow_from_source_to_sink",
+    "detect_missing_security_checks",
+    "suggest_possible_exploit_chains"
+  ],
+  "output_format": {
+    "vulnerability_type": "",
+    "file": "",
+    "function": "",
+    "source": "",
+    "sink": "",
+    "data_flow": "",
+    "severity": "",
+    "exploitability": "",
+    "notes": ""
+  }
+}

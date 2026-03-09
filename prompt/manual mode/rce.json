@@ -1,0 +1,33 @@
+{
+  "analysis_type": "rce_detection",
+  "sinks": [
+    "eval",
+    "system",
+    "exec",
+    "shell_exec",
+    "passthru",
+    "popen",
+    "proc_open",
+    "include",
+    "require"
+  ],
+  "sources": [
+    "$_GET",
+    "$_POST",
+    "$_REQUEST",
+    "REST_parameters"
+  ],
+  "task": [
+    "find_execution_functions",
+    "check_if_user_input_reaches_execution",
+    "detect_dynamic_file_inclusion",
+    "suggest_rce_exploit_path"
+  ],
+  "output": {
+    "file": "",
+    "line": "",
+    "source": "",
+    "sink": "",
+    "exploit_vector": ""
+  }
+}

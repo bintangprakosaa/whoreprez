@@ -1,0 +1,66 @@
+{
+  "mode": "auto_gadget_chain_discovery",
+  "role": "php_object_injection_auditor",
+  "target": {
+    "application_type": "wordpress_plugin_or_php_application",
+    "language": "php"
+  },
+  "objective": "identify potential php object injection vulnerabilities and discover possible POP gadget chains leading to remote code execution",
+  "entry_points": [
+    "unserialize(",
+    "maybe_unserialize(",
+    "json_decode("
+  ],
+  "magic_methods": [
+    "__destruct",
+    "__wakeup",
+    "__toString",
+    "__call",
+    "__invoke",
+    "__sleep"
+  ],
+  "dangerous_sinks": [
+    "eval",
+    "system",
+    "exec",
+    "passthru",
+    "shell_exec",
+    "popen",
+    "proc_open",
+    "include",
+    "require",
+    "file_put_contents",
+    "unlink"
+  ],
+  "analysis_tasks": [
+    "scan codebase for unserialize entry points",
+    "identify classes containing magic methods",
+    "detect methods that interact with file operations or command execution",
+    "trace property access inside magic methods",
+    "identify if attacker-controlled properties can reach dangerous sinks",
+    "attempt to construct possible POP gadget chains"
+  ],
+  "wordpress_context_checks": [
+    "check if serialized data is stored in options or metadata",
+    "check if unserialize is applied to user-controlled input",
+    "check if plugin loads external serialized data"
+  ],
+  "exploit_chain_patterns": [
+    "unserialize -> __wakeup -> include",
+    "unserialize -> __destruct -> system",
+    "unserialize -> __toString -> eval",
+    "unserialize -> __call -> command_execution"
+  ],
+  "output_format": {
+    "vulnerability_type": "PHP Object Injection",
+    "entry_point": "",
+    "file_path": "",
+    "class_name": "",
+    "magic_method": "",
+    "property_flow": "",
+    "dangerous_sink": "",
+    "possible_pop_chain": "",
+    "severity": "",
+    "manual_verification_steps": ""
+  }
+}

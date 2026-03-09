@@ -1,0 +1,10 @@
+{
+  "vulnerability": "Remote Code Execution",
+  "file": "admin/ajax-handler.php",
+  "line": 142,
+  "source": "$_POST['template']",
+  "sink": "include()",
+  "dataflow": "$_POST['template'] -> $template -> include($template)",
+  "severity": "Critical",
+  "exploit_path": "LFI -> include -> RCE"
+}
